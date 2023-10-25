@@ -1,5 +1,5 @@
 # container_template
-Template to containerize a script for swarm. 
+Template to containerize a script for swarm. Scripts in any language can be containerized according to this general pattern, but this repo and guide are primarily concerned with containerizing Python.
 
 ## Interfacing With Swarm
 A script container for swarm must run two commands: spec and read.

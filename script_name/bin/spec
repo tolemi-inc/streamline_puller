@@ -1,0 +1,36 @@
+#!/bin/bash
+
+cat <<EOF
+{
+    "type": "SPEC",
+    "spec": {
+        "title": "ScriptName",
+        "type": "object",
+        "properties": {
+            "attributeOne": {
+                "type": "dictionary",
+                "custom": {
+                    "options": [
+                        {
+                            "label": "OptionOne",
+                            "value": "option_one"
+                        },
+                        {
+                            "label": "OptionTwo",
+                            "value": "option_two"
+                        },
+                        {
+                            "label": "OptionThree",
+                            "value": "option_three"
+                        }
+                    ]
+                }
+            },
+            "attributeTwo": {
+                "type": "boolean",
+                "defaultValue": "false"
+            }
+        }
+    }
+}
+EOF

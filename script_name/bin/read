@@ -1,0 +1,12 @@
+#!/bin/bash
+PULLER_SCRIPT_PATH="$(dirname "$0")"
+PULLER_SCRIPT="$PULLER_SCRIPT_PATH/../main.py"
+
+# Concatenate all command line arguments
+args=""
+for arg in "$@"; do
+  args+=" $arg"
+done
+
+# Execute the command with arguments
+python $PULLER_SCRIPT $args

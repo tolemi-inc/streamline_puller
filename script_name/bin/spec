@@ -29,6 +29,12 @@ cat <<EOF
             "attributeTwo": {
                 "type": "boolean",
                 "defaultValue": "false"
+            },
+            "attributeThree":{
+                "type": "secret"
+            },
+            "attributeFour":{
+                "type": "string"
             }
         }
     }

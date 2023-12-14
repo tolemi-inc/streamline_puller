@@ -15,3 +15,6 @@ DONE {"status": "ok", "file": "./data.csv", "columns": [{"name": "column_one_nam
 
 - A column's name value will appear as the column name in the dataset loaded into swarm.
 - The column type should be a valid Postgres type name. The column will be loaded using that type. If the data contains a value that does not match the specified type, the puller will fail.
+
+### troubleshooting
+- If you have permission issues, you can run chmod -R 777 . in order to assign all permissions to all users for the files in the directory

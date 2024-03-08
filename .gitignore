@@ -1,3 +1,5 @@
 config.json
 data
 venv
+*.csv
+!occupancies.csv

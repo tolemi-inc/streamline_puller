@@ -8,7 +8,8 @@ class Config:
         tenant_id,
         subscription_key,
         url,
-        report_name
+        report_name,
+        data_file_path
     ):
         self.client_id = client_id
         self.client_secret = client_secret
@@ -16,6 +17,7 @@ class Config:
         self.subscription_key = subscription_key
         self.url = url
         self.report_name = report_name
+        self.data_file_path = data_file_path
 
     @property
     def client_id(self):
@@ -86,3 +88,14 @@ class Config:
         else:
             raise ConfigError("Invalid report name: {}. Expecting one of {}".format(
                 value, ", ".join(allowed_values)))
+    
+    @property
+    def data_file_path(self):
+        return self._data_file_path
+
+    @data_file_path.setter
+    def data_file_path(self, value):
+        if value is None:
+            raise ConfigError("Missing data file path in config")
+        else:
+            self._data_file_path = value

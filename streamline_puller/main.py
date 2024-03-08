@@ -53,8 +53,10 @@ def load_config(file_path):
     subscription_key = sub_config.get("subscription_key", None)
     url = sub_config.get("url", None)
     report_name = sub_config.get("report_name", None)
+    data_file_path = sub_config.get("data_file_path", None)
 
-    return Config(client_id, client_secret, tenant_id, subscription_key, url, report_name)
+
+    return Config(client_id, client_secret, tenant_id, subscription_key, url, report_name, data_file_path)
 
 
 def load_json(file_path):

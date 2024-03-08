@@ -46,8 +46,6 @@ def run(config):
     }
     print("DONE", json.dumps(output_object))
 
-
-
 def fail(error):
     result = {
         "status": "error",

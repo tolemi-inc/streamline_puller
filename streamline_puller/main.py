@@ -5,7 +5,7 @@ import traceback
 import logging
 import argparse
 import json
-import pandas as pd
+import csv
 
 parser = argparse.ArgumentParser(description="Process inputs for community core pulls")
 
@@ -23,11 +23,30 @@ def run(config):
     token = streamline.getToken()
 
     if config.report_name == 'Inspections':
-        streamline.create_inspection_report(token)
+        streamline.create_inspection_report(token, config.data_file_path)
     elif config.report_name == 'Violations':
-        streamline.create_violations_report(token)
+        streamline.create_violations_report(token, config.data_file_path)
     elif config.report_name == 'Permits':
-        streamline.create_permits_report(token)
+        streamline.create_permits_report(token, config.data_file_path)
+
+    with open(config.data_file_path, 'r+') as csvfile:
+        headers_dict = [{"name": header, "type": "VARCHAR"} for header in csvfile.readline().split(',')]
+        
+        all_lines = csvfile.readlines()
+        data_lines = all_lines[1:-1]
+
+        csvfile.seek(0)
+        csvfile.truncate()
+        csvfile.writelines(data_lines)
+
+    output_object = {
+        "status": "ok",
+        "file_name": config.data_file_path,
+        "columns": headers_dict
+    }
+    print("DONE", json.dumps(output_object))
+
+
 
 def fail(error):
     result = {

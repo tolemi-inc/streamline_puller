@@ -99,7 +99,7 @@ class Streamline:
         url_suffix = "lookups/GetPermitStatus/0"
         return self.get_object(token, url_suffix, "PermitStatusList")
 
-    def create_inspection_report(self, token):
+    def create_inspection_report(self, token, data_file_path):
         inspections = self.get_inspections(token)
 
         inspections_with_address = self.join_to_occupancies(token, inspections)
@@ -110,20 +110,20 @@ class Streamline:
         inspection_categories = self.get_inspection_categories(token)
         inspections_with_categories = pd.merge(inspections_with_types, inspection_categories, left_on='InspectionCategory', right_on='OccupancyCategoryId', how='left')
 
-        inspections_with_categories.to_csv('data/inspections.csv')
+        inspections_with_categories.to_csv(data_file_path)
 
         return inspections_with_categories
     
-    def create_violations_report(self, token):
+    def create_violations_report(self, token, data_file_path):
         violations = self.get_violations(token)
 
         violation_codes = self.get_violation_code(token)
         violations_with_codes = pd.merge(violations, violation_codes, on='ViolationCodeId', how='left')
 
-        violations_with_codes.to_csv('data/violations.csv')
+        violations_with_codes.to_csv(data_file_path)
         return violations_with_codes
     
-    def create_permits_report(self, token):
+    def create_permits_report(self, token, data_file_path):
         permits = self.get_permits(token)
 
         permits_with_address = self.join_to_occupancies(token, permits)
@@ -131,7 +131,7 @@ class Streamline:
         permit_status = self.get_permit_status(token)
         permits_with_status = pd.merge(permits_with_address, permit_status, on='PermitStatusId', how='left')
 
-        permits_with_status.to_csv('data/permits.csv')
+        permits_with_status.to_csv(data_file_path)
 
         return permits_with_status
     

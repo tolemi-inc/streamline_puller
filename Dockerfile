@@ -3,14 +3,14 @@ FROM python:3.9-slim-bookworm
 
 RUN echo $PATH
 
-WORKDIR /opt/SCRIPT_NAME
+WORKDIR /opt/streamline_puller
 
 #install requirements
-COPY requirements.txt /opt/SCRIPTNAME
+COPY requirements.txt /opt/streamline_puller
 RUN pip install -r requirements.txt
 
 # copy the script
-COPY SCRIPT_NAME /opt/SCRIPT_NAME
+COPY streamline_puller /opt/streamline_puller
 
 # add the script callers to path
-ENV PATH="/opt/zillow_puller/bin:$PATH"
+ENV PATH="/opt/streamline_puller/bin:$PATH"

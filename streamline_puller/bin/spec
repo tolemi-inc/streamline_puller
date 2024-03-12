@@ -4,37 +4,39 @@ cat <<EOF
 {
     "type": "SPEC",
     "spec": {
-        "title": "ScriptName",
+        "title": "Streamline Container",
         "type": "object",
         "properties": {
-            "attributeOne": {
+            "report_name": {
                 "type": "dictionary",
                 "custom": {
                     "options": [
                         {
-                            "label": "OptionOne",
-                            "value": "option_one"
+                            "label": "Inspections",
+                            "value": "Inspections"
                         },
                         {
-                            "label": "OptionTwo",
-                            "value": "option_two"
+                            "label": "Violations",
+                            "value": "Violations"
                         },
                         {
-                            "label": "OptionThree",
-                            "value": "option_three"
+                            "label": "Permits",
+                            "value": "Permits"
                         }
                     ]
                 }
             },
-            "attributeTwo": {
-                "type": "boolean",
-                "defaultValue": "false"
+            "client_id": {
+                "type": "secret",
             },
-            "attributeThree":{
+            "client_secret":{
                 "type": "secret"
             },
-            "attributeFour":{
-                "type": "string"
+            "tenant_id":{
+                "type": "secret"
+            },
+            "subscription_key":{
+                "type": "secret"
             }
         }
     }

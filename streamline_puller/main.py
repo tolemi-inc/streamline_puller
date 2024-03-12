@@ -18,7 +18,7 @@ logging.getLogger().setLevel(logging.INFO)
 
 def run(config):
 
-    streamline = Streamline(config.client_id, config.client_secret, config.tenant_id, config.subscription_key, config.url)
+    streamline = Streamline(config.client_id, config.client_secret, config.tenant_id, config.subscription_key, "https://data.streamlineapi.com/")
 
     token = streamline.getToken()
 
@@ -68,12 +68,11 @@ def load_config(file_path):
     client_secret = sub_config.get("client_secret", None)
     tenant_id = sub_config.get("tenant_id", None)
     subscription_key = sub_config.get("subscription_key", None)
-    url = sub_config.get("url", None)
     report_name = sub_config.get("report_name", None)
     data_file_path = sub_config.get("data_file_path", None)
 
 
-    return Config(client_id, client_secret, tenant_id, subscription_key, url, report_name, data_file_path)
+    return Config(client_id, client_secret, tenant_id, subscription_key, report_name, data_file_path)
 
 
 def load_json(file_path):

@@ -7,7 +7,6 @@ class Config:
         client_secret,
         tenant_id,
         subscription_key,
-        url,
         report_name,
         data_file_path
     ):
@@ -15,7 +14,6 @@ class Config:
         self.client_secret = client_secret
         self.tenant_id = tenant_id
         self.subscription_key = subscription_key
-        self.url = url
         self.report_name = report_name
         self.data_file_path = data_file_path
 
@@ -62,17 +60,6 @@ class Config:
             raise ConfigError("Missing subscription key in config.")
         else:
             self._subscription_key = value
-
-    @property
-    def url(self):
-        return self._url
-
-    @url.setter
-    def url(self, value):
-        if value is None:
-            raise ConfigError("Missing base url in config")
-        else:
-            self._url = value
 
     @property
     def report_name(self):

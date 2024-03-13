@@ -159,7 +159,7 @@ class Streamline:
             occupancy = self.get_occupancy(token, occupancy_id)
             if occupancy["OccupancyId"][0] != '0':
                 updated_occupancies = updated_occupancies._append(occupancy, ignore_index=True)
-            print(f"Looped through {loop_start} out of {total_loop} occupancies")
+            logging.info(f"Looped through {loop_start} out of {total_loop} occupancies")
             loop_start += 1
         
         return pd.merge(object, updated_occupancies, on='OccupancyId', how='left')

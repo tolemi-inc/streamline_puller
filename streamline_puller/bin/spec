@@ -27,15 +27,15 @@ cat <<EOF
                 }
             },
             "client_id": {
-                "type": "secret",
-            },
-            "client_secret":{
                 "type": "secret"
             },
-            "tenant_id":{
+            "client_secret": {
                 "type": "secret"
             },
-            "subscription_key":{
+            "tenant_id": {
+                "type": "secret"
+            },
+            "subscription_key": {
                 "type": "secret"
             }
         }

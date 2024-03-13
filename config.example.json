@@ -6,6 +6,6 @@
       "tenant_id": "",
       "subscription_key": "",
       "report_name": "Inspections",
-      "data_file_path": "violations.csv"
+      "dataFilePath": "violations.csv"
     }
   }

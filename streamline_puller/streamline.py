@@ -1,6 +1,7 @@
 import requests
 import logging
 import pandas as pd
+import datetime
 
 class Streamline:
     def __init__(self, client_id, client_secret, tenant_id, subscription_key, base_url):
@@ -99,8 +100,11 @@ class Streamline:
         url_suffix = "lookups/GetPermitStatus/0"
         return self.get_object(token, url_suffix, "PermitStatusList")
 
-    def create_inspection_report(self, token, data_file_path):
+    def create_inspection_report(self, token, data_file_path, include_historic=False):
         inspections = self.get_inspections(token)
+        
+        if not include_historic:
+            inspections = inspections.loc[inspections["InspectionCompletedDate"] == "0001-01-01T00:00:00"]
 
         inspections_with_address = self.join_to_occupancies(token, inspections)
 
@@ -123,8 +127,12 @@ class Streamline:
         violations_with_codes.to_csv(data_file_path)
         return violations_with_codes
     
-    def create_permits_report(self, token, data_file_path):
+    def create_permits_report(self, token, data_file_path, include_historic=False):
         permits = self.get_permits(token)
+
+        if not include_historic:
+            two_months_ago = pd.Timestamp.now() - pd.DateOffset(months = 2)
+            permits = permits.loc[pd.to_datetime(permits["IssuedDate"]) >= two_months_ago]
 
         permits_with_address = self.join_to_occupancies(token, permits)
 
@@ -137,14 +145,13 @@ class Streamline:
     
     # object is inspection or permits dataframe
     def join_to_occupancies(self, token, object):
-        # all occupancies that have previously been found in the data
-        existing_occupancies = pd.read_csv("streamline_puller/occupancies.csv")
+        # all occupancies from get occupancies endpoint
+        existing_occupancies = self.get_occupancies(token)
 
-        # occupancy ids that are in object (inspeciton/permit) data but not occupancy data
+        # occupancy ids that are in object (inspection/permit) data but not occupancy endpoinit
         id_difference = list(set(object["OccupancyId"]).difference(set(existing_occupancies["OccupancyId"])))
 
         # loops through all occupancy ids in object data but not occupancies data
-        # adds to occupancy data if new occupancy is encountered
         total_loop = len(id_difference)
         loop_start = 1
         updated_occupancies = existing_occupancies
@@ -155,6 +162,4 @@ class Streamline:
             print(f"Looped through {loop_start} out of {total_loop} occupancies")
             loop_start += 1
         
-        updated_occupancies.to_csv("streamline_puller/occupancies.csv")
-
         return pd.merge(object, updated_occupancies, on='OccupancyId', how='left')

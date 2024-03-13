@@ -26,6 +26,21 @@ cat <<EOF
                     ]
                 }
             },
+            "include_historical_data": {
+                "type": "dictionary",
+                "custom": {
+                    "options": [
+                        {
+                            "label": "Yes",
+                            "value": "Yes"
+                        },
+                        {
+                            "label": "No",
+                            "value": "No"
+                        }
+                    ]
+                }
+            },
             "client_id": {
                 "type": "secret"
             },

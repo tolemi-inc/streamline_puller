@@ -8,6 +8,7 @@ class Config:
         tenant_id,
         subscription_key,
         report_name,
+        include_historical_data,
         data_file_path
     ):
         self.client_id = client_id
@@ -15,6 +16,7 @@ class Config:
         self.tenant_id = tenant_id
         self.subscription_key = subscription_key
         self.report_name = report_name
+        self.include_historical_data = include_historical_data
         self.data_file_path = data_file_path
 
     @property
@@ -75,6 +77,17 @@ class Config:
         else:
             raise ConfigError("Invalid report name: {}. Expecting one of {}".format(
                 value, ", ".join(allowed_values)))
+    
+    @property
+    def include_historical_data(self):
+        return self._include_historical_data
+
+    @include_historical_data.setter
+    def include_historical_data(self, value):
+        if value is None:
+            raise ConfigError("Missing include historical data flag in config")
+        else:
+            self._include_historical_data = value
     
     @property
     def data_file_path(self):

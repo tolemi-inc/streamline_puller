@@ -69,7 +69,7 @@ def load_config(file_path):
     tenant_id = sub_config.get("tenant_id", None)
     subscription_key = sub_config.get("subscription_key", None)
     report_name = sub_config.get("report_name", None)
-    data_file_path = sub_config.get("dataFilePath", None)
+    data_file_path = raw_config.get("dataFilePath", None)
 
 
     return Config(client_id, client_secret, tenant_id, subscription_key, report_name, data_file_path)

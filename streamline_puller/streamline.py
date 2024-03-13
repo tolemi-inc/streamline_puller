@@ -138,7 +138,7 @@ class Streamline:
     # object is inspection or permits dataframe
     def join_to_occupancies(self, token, object):
         # all occupancies that have previously been found in the data
-        existing_occupancies = pd.read_csv("occupancies.csv")
+        existing_occupancies = pd.read_csv("streamline_puller/occupancies.csv")
 
         # occupancy ids that are in object (inspeciton/permit) data but not occupancy data
         id_difference = list(set(object["OccupancyId"]).difference(set(existing_occupancies["OccupancyId"])))
@@ -155,6 +155,6 @@ class Streamline:
             print(f"Looped through {loop_start} out of {total_loop} occupancies")
             loop_start += 1
         
-        updated_occupancies.to_csv("occupancies.csv")
+        updated_occupancies.to_csv("streamline_puller/occupancies.csv")
 
         return pd.merge(object, updated_occupancies, on='OccupancyId', how='left')

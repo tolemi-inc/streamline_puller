@@ -32,13 +32,12 @@ def run(config):
 
     with open(config.data_file_path, 'r+') as csvfile:
         headers_dict = [{"name": header, "type": "VARCHAR"} for header in csvfile.readline().split(',')]
-        
+    
         all_lines = csvfile.readlines()
-        data_lines = all_lines[1:-1]
 
         csvfile.seek(0)
         csvfile.truncate()
-        csvfile.writelines(data_lines)
+        csvfile.writelines(all_lines)
 
     output_object = {
         "status": "ok",

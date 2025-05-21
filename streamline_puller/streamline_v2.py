@@ -17,8 +17,8 @@ class StreamlineV2:
     ):
         self.client_id = client_id
         self.subscription_key = subscription_key
-        self.username = username or "integrations-scripts+toledo-streamline@tolemi.com"
-        self.password = password or "w5$dK2_7?fA5_3$"
+        self.username = username 
+        self.password = password 
         self.base_url = "https://process-dev.firerecoveryusa.com/Primary/restapi"
         self._token = None
         self._token_expiry = None

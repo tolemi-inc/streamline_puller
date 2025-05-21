@@ -28,13 +28,15 @@ def run(config: Config) -> Dict[str, Any]:
             config.tenant_id,
             config.subscription_key,
         )
-    else:  # v2
+    elif config.version == "v2":
         streamline = StreamlineV2(
             client_id=config.client_id,
             subscription_key=config.subscription_key,
             username=config.username,
             password=config.password,
         )
+    else:
+        raise ValueError(f"Invalid version: {config.version}")
 
     if config.version == "v1":
         include_historical_data = config.include_historical_data == "Yes"

@@ -1,4 +1,29 @@
+# Configuration files
 config.json
+config_v1.json
+config_v2.json
 data
 venv
+env
 *.csv
+
+# Python bytecode
+*.pyc
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+*.egg-info/
+dist/
+build/
+
+# Environment variables
+.env
+
+# VSCode
+.vscode/
+
+# macOS system files
+.DS_Store
+**/.DS_Store

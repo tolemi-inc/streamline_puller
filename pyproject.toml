@@ -1,0 +1,45 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "streamline_puller"
+version = "0.1.0"
+authors = [
+    { name = "Reid Nichols" },
+    { name = "Michael Horvath" }
+]
+description = "A package for pulling data from Streamline"
+requires-python = ">=3.8"
+dependencies = [
+    "requests==2.31.0",
+    "pandas==2.2.1",
+    "pytest==8.0.2"
+]
+
+[tool.setuptools]
+packages = ["streamline_puller"]
+
+[tool.black]
+line-length = 100
+target-version = ['py311']
+include = '\.pyi?$'
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+line_length = 100
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+warn_unreachable = true

@@ -1,11 +1,14 @@
-from streamline import Streamline
-from config import Config
-from config_error import ConfigError
-import traceback
-import logging
 import argparse
 import json
-import csv
+import logging
+import traceback
+from typing import Any, Dict
+
+from config import Config
+from config_error import ConfigError
+
+from streamline_puller.streamline_v1 import StreamlineV1
+from streamline_puller.streamline_v2 import StreamlineV2
 
 parser = argparse.ArgumentParser(description="Process inputs for community core pulls")
 
@@ -16,37 +19,52 @@ args = parser.parse_args()
 logging.getLogger().setLevel(logging.INFO)
 
 
-def run(config):
+def run(config: Config) -> Dict[str, Any]:
+    # Initialize the appropriate Streamline client based on version
+    if config.version == "v1":
+        streamline = StreamlineV1(
+            config.client_id,
+            config.client_secret,
+            config.tenant_id,
+            config.subscription_key,
+        )
+    elif config.version == "v2":
+        streamline = StreamlineV2(
+            client_id=config.client_id,
+            subscription_key=config.subscription_key,
+            username=config.username,
+            password=config.password,
+        )
+    else:
+        raise ValueError(f"Invalid version: {config.version}")
 
-    streamline = Streamline(config.client_id, config.client_secret, config.tenant_id, config.subscription_key, "https://data.streamlineapi.com/")
-
-    token = streamline.getToken()
-
-    include_historical_data = (config.include_historical_data == "Yes")
-    if config.report_name == 'Inspections':
-        streamline.create_inspection_report(token, config.data_file_path, include_historical_data)
-    elif config.report_name == 'Violations':
-        streamline.create_violations_report(token, config.data_file_path)
-    elif config.report_name == 'Permits':
-        streamline.create_permits_report(token, config.data_file_path, include_historical_data)
-
-    with open(config.data_file_path, 'r+') as csvfile:
-        headers_dict = [{"name": header, "type": "VARCHAR"} for header in csvfile.readline().split(',')]
-    
-        all_lines = csvfile.readlines()
-
-        csvfile.seek(0)
-        csvfile.truncate()
-        csvfile.writelines(all_lines)
+    if config.version == "v1":
+        include_historical_data = config.include_historical_data == "Yes"
+        if config.report_name == "Inspections":
+            headers_dict = streamline.create_inspection_report(
+                config.data_file_path, include_historical_data
+            )
+        elif config.report_name == "Violations":
+            headers_dict = streamline.create_violations_report(config.data_file_path)
+        elif config.report_name == "Permits":
+            headers_dict = streamline.create_permits_report(config.data_file_path)
+    elif config.version == "v2":
+        if config.report_name == "Inspections":
+            headers_dict = streamline.create_inspection_report(config.data_file_path)
+        elif config.report_name == "Occupancies":
+            headers_dict = streamline.create_occupancy_report(config.data_file_path)
+    else:
+        raise ValueError(f"Invalid version: {config.version}")
 
     output_object = {
         "status": "ok",
         "file_name": config.data_file_path,
-        "columns": headers_dict
+        "columns": headers_dict,
     }
     print("DONE", json.dumps(output_object))
 
-def fail(error):
+
+def fail(error: Exception) -> Dict[str, Any]:
     result = {
         "status": "error",
         "error": """{}
@@ -59,7 +77,7 @@ def fail(error):
     print("DONE", output_json)
 
 
-def load_config(file_path):
+def load_config(file_path: str) -> Config:
     raw_config = load_json(file_path)
 
     sub_config = raw_config.get("config", {})
@@ -71,25 +89,38 @@ def load_config(file_path):
     report_name = sub_config.get("report_name", None)
     include_historical_data = sub_config.get("include_historical_data", None)
     data_file_path = raw_config.get("dataFilePath", None)
+    version = sub_config.get("version", "v1")  # Default to v1 for backward compatibility
+    username = sub_config.get("username", None)
+    password = sub_config.get("password", None)
+
+    return Config(
+        client_id,
+        client_secret,
+        tenant_id,
+        subscription_key,
+        report_name,
+        include_historical_data,
+        data_file_path,
+        version,
+        username,
+        password,
+    )
 
 
-    return Config(client_id, client_secret, tenant_id, subscription_key, report_name, include_historical_data, data_file_path)
-
-
-def load_json(file_path):
+def load_json(file_path: str) -> Dict[str, Any]:
     try:
         with open(file_path, "r") as file:
             data = json.load(file)
         return data
     except FileNotFoundError:
-        True
-        print(f"File '{file_path}' not found.")
+        print(f"Error: Config file '{file_path}' not found.")
+        raise ConfigError(f"Config file '{file_path}' not found.")
     except json.JSONDecodeError as e:
-        True
-        print(f"JSON decoding error: {e}")
+        print(f"Error: Invalid JSON in config file: {e}")
+        raise ConfigError(f"Invalid JSON in config file: {e}")
     except Exception as e:
-        True
-        print(f"An error occurred: {e}")
+        print(f"Error: Failed to load config file: {e}")
+        raise ConfigError(f"Failed to load config file: {e}")
 
 
 # Main Program
@@ -99,4 +130,3 @@ if __name__ == "__main__":
         run(config)
     except ConfigError as e:
         fail(e)
-

@@ -48,11 +48,19 @@ def run(config: Config) -> Dict[str, Any]:
             headers_dict = streamline.create_violations_report(config.data_file_path)
         elif config.report_name == "Permits":
             headers_dict = streamline.create_permits_report(config.data_file_path)
+        else:
+            raise ValueError(
+                f"Unsupported report '{config.report_name}' for v1. Expected: Inspections, Violations, or Permits"
+            )
     elif config.version == "v2":
         if config.report_name == "Inspections":
             headers_dict = streamline.create_inspection_report(config.data_file_path)
         elif config.report_name == "Occupancies":
             headers_dict = streamline.create_occupancy_report(config.data_file_path)
+        else:
+            raise ValueError(
+                f"Unsupported report '{config.report_name}' for v2. Expected: Inspections or Occupancies"
+            )
     else:
         raise ValueError(f"Invalid version: {config.version}")
 

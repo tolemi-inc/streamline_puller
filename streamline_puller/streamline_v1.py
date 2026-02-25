@@ -54,7 +54,9 @@ class StreamlineV1:
 
         token_data = response.json()
         if "access_token" not in token_data:
-            raise Exception(f"Token response missing 'access_token' field. Response: {token_data}")
+            raise Exception(
+                f"Token response missing 'access_token' field. Keys: {list(token_data.keys())}"
+            )
 
         logging.info("Successfully got access token")
         return token_data["access_token"]
@@ -69,10 +71,21 @@ class StreamlineV1:
 
         logging.info(f"Successfully got {object_name}")
 
+        try:
+            data = response.json()
+        except Exception as e:
+            raise Exception(
+                f"Failed to parse {object_name} response as JSON"
+            ) from e
+
         if object_name == "Occupancy":
-            return pd.DataFrame([response.json()])
-        else:
-            return pd.DataFrame(response.json()[object_name])
+            return pd.DataFrame([data])
+
+        if object_name not in data:
+            raise Exception(
+                f"Response missing '{object_name}' field. Keys: {list(data.keys())}"
+            )
+        return pd.DataFrame(data[object_name])
 
     def get_occupancies(self) -> pd.DataFrame:
         url_suffix = "occupancy/GetOccupancies/1/?PageIndex=1&PageCount=4000"

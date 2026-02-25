@@ -68,7 +68,7 @@ class StreamlineV2:
 
             if "LoginAndGetJWTTokenResult" not in result:
                 raise Exception(
-                    f"Token response missing 'LoginAndGetJWTTokenResult' field. Response: {result}"
+                    f"Token response missing 'LoginAndGetJWTTokenResult' field. Keys: {list(result.keys())}"
                 )
 
             token = result["LoginAndGetJWTTokenResult"]
@@ -77,9 +77,7 @@ class StreamlineV2:
         except requests.exceptions.RequestException as e:
             error_detail = str(e)
             if hasattr(e, "response") and e.response is not None:
-                error_detail = (
-                    f"{error_detail} (status: {e.response.status_code}, body: {e.response.text})"
-                )
+                error_detail = f"{error_detail} (status: {e.response.status_code})"
             raise Exception(f"Failed to authenticate with Streamline V2 API: {error_detail}") from e
         except Exception as e:
             raise Exception(f"Failed to authenticate with Streamline V2 API: {str(e)}") from e

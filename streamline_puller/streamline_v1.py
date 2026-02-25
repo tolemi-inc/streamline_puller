@@ -28,11 +28,17 @@ class StreamlineV1:
 
             else:
                 logging.error("Api request returned a non-200 response")
-                logging.error(response.json())
-                raise Exception("Error making api request")
+                try:
+                    error_body = response.json()
+                    logging.error(error_body)
+                except Exception:
+                    error_body = response.text
+                raise Exception(
+                    f"API request to {url} failed with status {response.status_code}: {error_body}"
+                )
 
-        except:
-            raise Exception("Error making api request")
+        except requests.exceptions.RequestException as e:
+            raise Exception(f"API request to {url} failed: {str(e)}") from e
 
     def getToken(self) -> str:
         url = f"https://login.microsoftonline.com/{self.tenant_id}/oauth2/v2.0/token"
@@ -45,9 +51,13 @@ class StreamlineV1:
         headers = {"Content-Type": "application/x-www-form-urlencoded"}
 
         response = self.make_api_call("POST", url, headers, payload)
-        logging.info("Successfully got access token")
 
-        return response.json()["access_token"]
+        token_data = response.json()
+        if "access_token" not in token_data:
+            raise Exception(f"Token response missing 'access_token' field. Response: {token_data}")
+
+        logging.info("Successfully got access token")
+        return token_data["access_token"]
 
     def get_object(self, url_suffix, object_name) -> pd.DataFrame:
         headers = {

@@ -128,5 +128,5 @@ if __name__ == "__main__":
     try:
         config = load_config(args.config)
         run(config)
-    except ConfigError as e:
+    except Exception as e:
         fail(e)

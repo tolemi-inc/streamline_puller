@@ -67,18 +67,22 @@ class StreamlineV2:
             result = response.json()
 
             if "LoginAndGetJWTTokenResult" not in result:
-                raise Exception("Invalid token response format")
+                raise Exception(
+                    f"Token response missing 'LoginAndGetJWTTokenResult' field. Response: {result}"
+                )
 
             token = result["LoginAndGetJWTTokenResult"]
             self._token = token
 
+        except requests.exceptions.RequestException as e:
+            error_detail = str(e)
+            if hasattr(e, "response") and e.response is not None:
+                error_detail = (
+                    f"{error_detail} (status: {e.response.status_code}, body: {e.response.text})"
+                )
+            raise Exception(f"Failed to authenticate with Streamline V2 API: {error_detail}") from e
         except Exception as e:
-            print(f"\nError: {str(e)}")
-            if isinstance(e, requests.exceptions.RequestException) and hasattr(e, "response"):
-                print(f"Response status: {e.response.status_code}")
-                print(f"Response text: {e.response.text}")
-            print(f"URL being accessed: {url}")
-            raise
+            raise Exception(f"Failed to authenticate with Streamline V2 API: {str(e)}") from e
 
     def get_occupancies(self, occupancy_type: str) -> pd.DataFrame:
         if occupancy_type == "commercial":
@@ -101,15 +105,30 @@ class StreamlineV2:
         payload = json.dumps(payload_dict)
 
         response = requests.request("POST", url, headers=headers, data=payload)
+        try:
+            response.raise_for_status()
+        except requests.exceptions.HTTPError as e:
+            raise Exception(
+                f"Occupancies API request failed with status {response.status_code}: {response.text}"
+            ) from e
+
+        try:
+            response_data = response.json()
+        except Exception as e:
+            raise Exception(f"Failed to parse occupancies response as JSON: {response.text}") from e
+
+        if "Done" not in response_data:
+            raise Exception(f"Occupancies response missing 'Done' field: {response_data}")
+
         if occupancy_type == "commercial":
-            result = response.json()["Done"].get("CommercialOccupanciesList")
+            result = response_data["Done"].get("CommercialOccupanciesList")
         elif occupancy_type == "residential":
-            result = response.json()["Done"].get("ResidentialOccupanciesList")
+            result = response_data["Done"].get("ResidentialOccupanciesList")
         else:
-            raise Exception("Invalid occupancy type")
+            raise Exception(f"Invalid occupancy type: {occupancy_type}")
 
         if not result:
-            raise Exception("Invalid occupancies response format")
+            raise Exception(f"No {occupancy_type} occupancies returned from API")
 
         return pd.DataFrame(result)
 
@@ -143,9 +162,18 @@ class StreamlineV2:
 
         response = requests.request("POST", url, headers=headers, data=payload)
         try:
+            response.raise_for_status()
+        except requests.exceptions.HTTPError as e:
+            raise Exception(
+                f"Inspections API request failed with status {response.status_code}: {response.text}"
+            ) from e
+
+        try:
             result = response.json()["Done"]["Result"]
-        except:
-            raise Exception("Invalid inspections response format")
+        except (KeyError, ValueError) as e:
+            raise Exception(
+                f"Invalid inspections response format: {response.text[:500]}"
+            ) from e
 
         return pd.DataFrame(result)
 

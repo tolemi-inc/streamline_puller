@@ -1,3 +1,5 @@
+**This repo has been archived and can be found at <https://github.com/tolemi-inc/angel/tree/main/angel/pullers/streamline>**
+
 # Streamline Puller
 
 A Python package for pulling data from the Streamline API.
